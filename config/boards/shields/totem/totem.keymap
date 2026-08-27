@@ -51,18 +51,11 @@
             bindings = <&kp ESC>;
         };
 
-        // F+J → Caps Word (CONSTANTS / Go-style idents)
+        // F+J → Caps Word (CONSTANTS / SCREAMING_SNAKE)
         combo_caps_word {
             timeout-ms = <50>;
             key-positions = <13 16>;
             bindings = <&caps_word>;
-        };
-
-        // D+F → Ctrl+C (quick interrupt / copy helper)
-        combo_ctrl_c {
-            timeout-ms = <50>;
-            key-positions = <12 13>;
-            bindings = <&kp LC(C)>;
         };
     };
 
