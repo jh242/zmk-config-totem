@@ -1,8 +1,13 @@
-// TOTEM — QWERTY / Vim / Claude Code
-// Ported from jh242/zmk-config Corne keymap; adapted for 38 keys.
+// TOTEM — QWERTY optimized for Vim, Claude Code, React / Qt / C++
 //
-// Layers: BASE → NAV (hold Enter) → SYM (hold Space) → NUM (NAV+SYM tri-layer)
-// Outer bottoms: tap Tab / hold Shift  ·  Backspace
+// Design notes (vs straight Corne port):
+// - Home-row mods free the thumbs for Esc / Tab / Bspc (big win on 38 keys)
+// - Opposite-hand layers: hold left Space → nav/nums on the right;
+//   hold right Enter → symbols/brackets on the left
+// - Esc is a dedicated thumb (vim); Tab dedicated (Claude / indent)
+// - Brackets clustered for JSX, templates, and indexing
+//
+// Layers: BASE | NAV (hold Space) | SYM (hold Enter) | NUM (both = tri-layer)
 
 #include <behaviors.dtsi>
 #include <dt-bindings/zmk/keys.h>
@@ -15,10 +20,16 @@
 #define NUM  3
 
 &mt {
-    flavor = "tap-preferred";
+    flavor = "balanced";
+    tapping-term-ms = <200>;
+    quick-tap-ms = <150>;
+    require-prior-idle-ms = <120>;
+};
+
+&lt {
+    flavor = "balanced";
     tapping-term-ms = <180>;
-    quick-tap-ms = <120>;
-    global-quick-tap;
+    quick-tap-ms = <150>;
 };
 
 / {
@@ -32,17 +43,26 @@
 
     combos {
         compatible = "zmk,combos";
-        // Q+W → Esc (vim reflex; Esc also on right thumb)
-        combo_esc {
-            timeout-ms = <50>;
-            key-positions = <0 1>;
-            bindings = <&kp ESC>;
-        };
-        // J+K → Escape (vim home-row; works even when thumbs are busy)
+
+        // J+K → Esc (vim muscle memory; Esc also on thumb)
         combo_esc_jk {
             timeout-ms = <50>;
             key-positions = <16 17>;
             bindings = <&kp ESC>;
+        };
+
+        // F+J → Caps Word (CONSTANTS / Go-style idents)
+        combo_caps_word {
+            timeout-ms = <50>;
+            key-positions = <13 16>;
+            bindings = <&caps_word>;
+        };
+
+        // D+F → Ctrl+C (quick interrupt / copy helper)
+        combo_ctrl_c {
+            timeout-ms = <50>;
+            key-positions = <12 13>;
+            bindings = <&kp LC(C)>;
         };
     };
 
@@ -53,63 +73,65 @@
             display-name = "BASE";
 // -----------------------------------------------------------------------------------------
 //           |  Q  |  W  |  E  |  R  |  T  |   |  Y  |  U  |  I  |  O  |  P  |
-//           |  A  |  S  |  D  |  F  |  G  |   |  H  |  J  |  K  |  L  |  ;  |
-// | Tab/Shft|  Z  |  X  |  C  |  V  |  B  |   |  N  |  M  |  ,  |  .  |  /  | BSPC |
-//                     | Alt | Ctrl| Ent |   | Spc | Esc | Gui |
-//                            NAV↑              SYM↑
+//           |A/GUI|S/ALT|D/CTL|F/SFT|  G  |   |  H  |J/SFT|K/CTL|L/ALT|;/GUI|
+// |    `    |  Z  |  X  |  C  |  V  |  B  |   |  N  |  M  |  ,  |  .  |  /  |  '   |
+//                     | Tab | Esc | Spc |   | Ent | Bspc| Del |
+//                                  NAV↑        SYM↑
             bindings = <
-                        &kp Q        &kp W     &kp E      &kp R       &kp T           &kp Y        &kp U     &kp I      &kp O      &kp P
-                        &kp A        &kp S     &kp D      &kp F       &kp G           &kp H        &kp J     &kp K      &kp L      &kp SEMI
-            &mt LSHFT TAB &kp Z        &kp X     &kp C      &kp V       &kp B           &kp N        &kp M     &kp COMMA  &kp DOT    &kp FSLH   &kp BSPC
-                                             &kp LALT  &kp LCTRL  &lt NAV RET     &lt SYM SPACE &kp ESC  &kp LGUI
+                        &kp Q          &kp W          &kp E          &kp R          &kp T            &kp Y          &kp U          &kp I          &kp O          &kp P
+                        &mt LGUI A     &mt LALT S     &mt LCTRL D    &mt LSHFT F    &kp G            &kp H          &mt RSHFT J    &mt RCTRL K    &mt RALT L     &mt RGUI SEMI
+            &kp GRAVE   &kp Z          &kp X          &kp C          &kp V          &kp B            &kp N          &kp M          &kp COMMA      &kp DOT        &kp FSLH       &kp APOS
+                                                      &kp TAB        &kp ESC        &lt NAV SPACE    &lt SYM RET    &kp BSPC       &kp DEL
             >;
         };
 
         nav_layer {
             display-name = "NAV";
+// Hold Space (left thumb) → right hand does vim nav + numbers.
 // -----------------------------------------------------------------------------------------
 //           |  1  |  2  |  3  |  4  |  5  |   |  6  |  7  |  8  |  9  |  0  |
-//           | BT0 | BT1 | BT2 | BT3 | BT4 |   |  ←  |  ↓  |  ↑  |  →  |  '  |
-// |         | Clr |     |     | Out |     |   |Home |PgDn |PgUp | End |  `  | Del  |
-//                     |     | Ctrl|     |   |     |     |     |
-// Vim arrows on H J K L. Numbers on top row. BT profiles on left home.
+//           |     |     |     |     |     |   |  ←  |  ↓  |  ↑  |  →  |     |
+// |         |     |     |wDel |     |     |   |Home |PgDn |PgUp | End |  \  |     |
+//                     |     |     |     |   |     |wDel |     |
+// HJKL = vim arrows. Ctrl+Backspace = delete word (Claude prompt editing).
             bindings = <
-                        &kp N1       &kp N2       &kp N3       &kp N4       &kp N5         &kp N6    &kp N7    &kp N8    &kp N9     &kp N0
-                        &bt BT_SEL 0 &bt BT_SEL 1 &bt BT_SEL 2 &bt BT_SEL 3 &bt BT_SEL 4   &kp LEFT  &kp DOWN  &kp UP    &kp RIGHT  &kp APOS
-            &trans      &bt BT_CLR   &trans       &trans       &out OUT_TOG &trans         &kp HOME  &kp PG_DN &kp PG_UP &kp END    &kp GRAVE  &kp DEL
-                                             &trans       &kp LCTRL    &trans          &trans     &trans    &trans
+                        &kp N1    &kp N2    &kp N3       &kp N4    &kp N5          &kp N6    &kp N7    &kp N8    &kp N9    &kp N0
+                        &trans    &trans    &trans       &trans    &trans          &kp LEFT  &kp DOWN  &kp UP    &kp RIGHT &trans
+            &trans      &trans    &trans    &kp LC(BSPC) &trans    &trans          &kp HOME  &kp PG_DN &kp PG_UP &kp END   &kp BSLH  &trans
+                                            &trans       &trans    &trans          &trans    &kp LC(BSPC) &trans
             >;
         };
 
         sym_layer {
             display-name = "SYM";
+// Hold Enter (right thumb) → left hand hits brackets / operators.
 // -----------------------------------------------------------------------------------------
 //           |  !  |  @  |  #  |  $  |  %  |   |  ^  |  &  |  *  |  (  |  )  |
-//           |     |     |     |     |     |   |  -  |  =  |  [  |  ]  |  \  |
-// |         |     |     |     |     |     |   |  _  |  +  |  {  |  }  |  |  |  ~   |
-//                     |     | Ctrl|     |   |     |     |     |
-// Programming symbols right-weighted (React / C++ / Qt).
+//           |  [  |  ]  |  (  |  )  |  ~  |   |  -  |  =  |  {  |  }  |  |  |
+// |         |  {  |  }  |  <  |  >  |  `  |   |  _  |  +  |      |      |  \  |     |
+//                     |     |     |     |   |     |     |     |
+// Left cluster tuned for JSX / templates / indexing; right keeps -_=+ for chains.
             bindings = <
-                        &kp EXCL     &kp AT    &kp HASH   &kp DLLR   &kp PRCNT       &kp CARET  &kp AMPS  &kp ASTRK  &kp LPAR  &kp RPAR
-                        &trans       &trans    &trans     &trans     &trans          &kp MINUS  &kp EQUAL &kp LBKT   &kp RBKT  &kp BSLH
-            &trans      &trans       &trans    &trans     &trans     &trans          &kp UNDER  &kp PLUS  &kp LBRC   &kp RBRC  &kp PIPE   &kp TILDE
-                                             &trans     &kp LCTRL  &trans          &trans     &trans    &trans
+                        &kp EXCL   &kp AT     &kp HASH  &kp DLLR  &kp PRCNT       &kp CARET  &kp AMPS  &kp ASTRK  &kp LPAR  &kp RPAR
+                        &kp LBKT   &kp RBKT   &kp LPAR  &kp RPAR  &kp TILDE       &kp MINUS  &kp EQUAL &kp LBRC   &kp RBRC  &kp PIPE
+            &trans      &kp LBRC   &kp RBRC   &kp LT    &kp GT    &kp GRAVE       &kp UNDER  &kp PLUS  &trans     &trans    &kp BSLH  &trans
+                                            &trans      &trans    &trans          &trans     &trans    &trans
             >;
         };
 
         num_layer {
             display-name = "NUM";
+// NAV+SYM together: numpad, F-keys, Bluetooth, flash helpers.
 // -----------------------------------------------------------------------------------------
-//           |     |     |     |     |     |   |  *  |  7  |  8  |  9  |  -  |
-//           |     |     |     |     |     |   |  /  |  4  |  5  |  6  |  +  |
-// |         |     |     |     |     |     |   |  0  |  1  |  2  |  3  |  .  | BSPC |
-//                     |     | Ctrl|     |   |     |     |     |
-// Tri-layer (NAV+SYM). Numpad on right.
+//           | F1  | F2  | F3  | F4  | F5  |   |  *  |  7  |  8  |  9  |  -  |
+//           | BT0 | BT1 | BT2 | BT3 | BT4 |   |  /  |  4  |  5  |  6  |  +  |
+// |  boot   | Clr | Out |     | F11 | F12 |   |  0  |  1  |  2  |  3  |  .  | Bspc |
+//                     |     |     |     |   |     |     |     |
             bindings = <
-                        &kp F1       &kp F2    &kp F3     &kp F4     &kp F5          &kp KP_MULTIPLY &kp N7 &kp N8 &kp N9 &kp KP_SUBTRACT
-                        &kp F6       &kp F7    &kp F8     &kp F9     &kp F10         &kp KP_DIVIDE   &kp N4 &kp N5 &kp N6 &kp KP_PLUS
-            &bootloader &sys_reset   &trans    &trans     &kp F11    &kp F12         &kp N0          &kp N1 &kp N2 &kp N3 &kp DOT      &kp BSPC
-                                             &trans     &kp LCTRL  &trans          &trans          &trans &trans
+                        &kp F1       &kp F2       &kp F3    &kp F4    &kp F5          &kp KP_MULTIPLY &kp N7 &kp N8 &kp N9 &kp KP_SUBTRACT
+                        &bt BT_SEL 0 &bt BT_SEL 1 &bt BT_SEL 2 &bt BT_SEL 3 &bt BT_SEL 4 &kp KP_DIVIDE &kp N4 &kp N5 &kp N6 &kp KP_PLUS
+            &bootloader &bt BT_CLR   &out OUT_TOG &trans    &kp F11   &kp F12         &kp N0          &kp N1 &kp N2 &kp N3 &kp DOT      &kp BSPC
+                                                  &trans    &trans    &trans          &trans          &trans &trans
             >;
         };
     };
