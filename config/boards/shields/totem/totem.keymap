@@ -1,13 +1,10 @@
-// TOTEM — QWERTY optimized for Vim, Claude Code, React / Qt / C++
+// TOTEM — QWERTY for Vim, Claude Code, React / Qt / C++
 //
-// Design notes (vs straight Corne port):
-// - Home-row mods free the thumbs for Esc / Tab / Bspc (big win on 38 keys)
-// - Opposite-hand layers: hold left Space → nav/nums on the right;
-//   hold right Enter → symbols/brackets on the left
-// - Esc is a dedicated thumb (vim); Tab dedicated (Claude / indent)
-// - Brackets clustered for JSX, templates, and indexing
-//
-// Layers: BASE | NAV (hold Space) | SYM (hold Enter) | NUM (both = tri-layer)
+// Corne muscle memory on thumbs (Space = right), tuned for 38 keys:
+// - Middle thumbs hold mods (Ctrl / Gui) — no home-row mods
+// - Enter (left) → NAV; Space (right) → SYM; both → NUM
+// - Outer bottoms: Tab/Shift and Backspace
+// - Opposite-hand layers + left-weighted brackets for JSX / templates
 
 #include <behaviors.dtsi>
 #include <dt-bindings/zmk/keys.h>
@@ -20,10 +17,10 @@
 #define NUM  3
 
 &mt {
-    flavor = "balanced";
-    tapping-term-ms = <200>;
-    quick-tap-ms = <150>;
-    require-prior-idle-ms = <120>;
+    flavor = "tap-preferred";
+    tapping-term-ms = <180>;
+    quick-tap-ms = <120>;
+    global-quick-tap;
 };
 
 &lt {
@@ -44,17 +41,17 @@
     combos {
         compatible = "zmk,combos";
 
-        // J+K → Esc (vim muscle memory; Esc also on thumb)
+        // J+K → Esc (extra vim escape when thumbs are busy)
         combo_esc_jk {
             timeout-ms = <50>;
             key-positions = <16 17>;
             bindings = <&kp ESC>;
         };
 
-        // F+J → Caps Word (CONSTANTS / SCREAMING_SNAKE)
+        // Z+X → Caps Word
         combo_caps_word {
             timeout-ms = <50>;
-            key-positions = <13 16>;
+            key-positions = <21 22>;
             bindings = <&caps_word>;
         };
     };
@@ -66,65 +63,64 @@
             display-name = "BASE";
 // -----------------------------------------------------------------------------------------
 //           |  Q  |  W  |  E  |  R  |  T  |   |  Y  |  U  |  I  |  O  |  P  |
-//           |A/GUI|S/ALT|D/CTL|F/SFT|  G  |   |  H  |J/SFT|K/CTL|L/ALT|;/GUI|
-// |    `    |  Z  |  X  |  C  |  V  |  B  |   |  N  |  M  |  ,  |  .  |  /  |  '   |
-//                     | Tab | Esc | Spc |   | Ent | Bspc| Del |
-//                                  NAV↑        SYM↑
+//           |  A  |  S  |  D  |  F  |  G  |   |  H  |  J  |  K  |  L  |  ;  |
+// | Tab/Sft |  Z  |  X  |  C  |  V  |  B  |   |  N  |  M  |  ,  |  .  |  /  | Bspc |
+//                     | Alt | Ctrl| Ent |   | Spc | Esc | Gui |
+//                            NAV↑              SYM↑
+// Middle thumbs = mods. Space on right thumb (Corne habit).
             bindings = <
-                        &kp Q          &kp W          &kp E          &kp R          &kp T            &kp Y          &kp U          &kp I          &kp O          &kp P
-                        &mt LGUI A     &mt LALT S     &mt LCTRL D    &mt LSHFT F    &kp G            &kp H          &mt RSHFT J    &mt RCTRL K    &mt RALT L     &mt RGUI SEMI
-            &kp GRAVE   &kp Z          &kp X          &kp C          &kp V          &kp B            &kp N          &kp M          &kp COMMA      &kp DOT        &kp FSLH       &kp APOS
-                                                      &kp TAB        &kp ESC        &lt NAV SPACE    &lt SYM RET    &kp BSPC       &kp DEL
+                        &kp Q         &kp W  &kp E  &kp R  &kp T        &kp Y  &kp U  &kp I      &kp O    &kp P
+                        &kp A         &kp S  &kp D  &kp F  &kp G        &kp H  &kp J  &kp K      &kp L    &kp SEMI
+            &mt LSHFT TAB &kp Z         &kp X  &kp C  &kp V  &kp B        &kp N  &kp M  &kp COMMA  &kp DOT  &kp FSLH  &kp BSPC
+                                          &kp LALT &kp LCTRL &lt NAV RET  &lt SYM SPACE &kp ESC &kp LGUI
             >;
         };
 
         nav_layer {
             display-name = "NAV";
-// Hold Space (left thumb) → right hand does vim nav + numbers.
+// Hold Enter (left) → numbers + vim arrows on the right.
 // -----------------------------------------------------------------------------------------
 //           |  1  |  2  |  3  |  4  |  5  |   |  6  |  7  |  8  |  9  |  0  |
-//           |     |     |     |     |     |   |  ←  |  ↓  |  ↑  |  →  |     |
-// |         |     |     |wDel |     |     |   |Home |PgDn |PgUp | End |  \  |     |
-//                     |     |     |     |   |     |wDel |     |
-// HJKL = vim arrows. Ctrl+Backspace = delete word (Claude prompt editing).
+//           |     |     |     |     |     |   |  ←  |  ↓  |  ↑  |  →  |  '  |
+// |         |     |     |wDel |     |     |   |Home |PgDn |PgUp | End |  `  | Del  |
+//                     |     | Ctrl|     |   |     |     |     |
             bindings = <
-                        &kp N1    &kp N2    &kp N3       &kp N4    &kp N5          &kp N6    &kp N7    &kp N8    &kp N9    &kp N0
-                        &trans    &trans    &trans       &trans    &trans          &kp LEFT  &kp DOWN  &kp UP    &kp RIGHT &trans
-            &trans      &trans    &trans    &kp LC(BSPC) &trans    &trans          &kp HOME  &kp PG_DN &kp PG_UP &kp END   &kp BSLH  &trans
-                                            &trans       &trans    &trans          &trans    &kp LC(BSPC) &trans
+                        &kp N1    &kp N2    &kp N3       &kp N4    &kp N5        &kp N6    &kp N7    &kp N8    &kp N9    &kp N0
+                        &trans    &trans    &trans       &trans    &trans        &kp LEFT  &kp DOWN  &kp UP    &kp RIGHT &kp APOS
+            &trans      &trans    &trans    &kp LC(BSPC) &trans    &trans        &kp HOME  &kp PG_DN &kp PG_UP &kp END   &kp GRAVE &kp DEL
+                                            &trans       &kp LCTRL &trans        &trans    &trans    &trans
             >;
         };
 
         sym_layer {
             display-name = "SYM";
-// Hold Enter (right thumb) → left hand hits brackets / operators.
+// Hold Space (right) → brackets / operators on the left.
 // -----------------------------------------------------------------------------------------
 //           |  !  |  @  |  #  |  $  |  %  |   |  ^  |  &  |  *  |  (  |  )  |
 //           |  [  |  ]  |  (  |  )  |  ~  |   |  -  |  =  |  {  |  }  |  |  |
-// |         |  {  |  }  |  <  |  >  |  `  |   |  _  |  +  |      |      |  \  |     |
-//                     |     |     |     |   |     |     |     |
-// Left cluster tuned for JSX / templates / indexing; right keeps -_=+ for chains.
+// |         |  {  |  }  |  <  |  >  |     |   |  _  |  +  |      |      |  \  |  `   |
+//                     |     | Ctrl|     |   |     |     |     |
             bindings = <
-                        &kp EXCL   &kp AT     &kp HASH  &kp DLLR  &kp PRCNT       &kp CARET  &kp AMPS  &kp ASTRK  &kp LPAR  &kp RPAR
-                        &kp LBKT   &kp RBKT   &kp LPAR  &kp RPAR  &kp TILDE       &kp MINUS  &kp EQUAL &kp LBRC   &kp RBRC  &kp PIPE
-            &trans      &kp LBRC   &kp RBRC   &kp LT    &kp GT    &kp GRAVE       &kp UNDER  &kp PLUS  &trans     &trans    &kp BSLH  &trans
-                                            &trans      &trans    &trans          &trans     &trans    &trans
+                        &kp EXCL  &kp AT    &kp HASH &kp DLLR &kp PRCNT      &kp CARET &kp AMPS &kp ASTRK &kp LPAR &kp RPAR
+                        &kp LBKT  &kp RBKT  &kp LPAR &kp RPAR &kp TILDE      &kp MINUS &kp EQUAL &kp LBRC &kp RBRC &kp PIPE
+            &trans      &kp LBRC  &kp RBRC  &kp LT   &kp GT   &trans         &kp UNDER &kp PLUS &trans    &trans   &kp BSLH &kp GRAVE
+                                          &trans    &kp LCTRL &trans         &trans    &trans   &trans
             >;
         };
 
         num_layer {
             display-name = "NUM";
-// NAV+SYM together: numpad, F-keys, Bluetooth, flash helpers.
+// NAV+SYM: numpad, F-keys, Bluetooth, flash helpers.
 // -----------------------------------------------------------------------------------------
 //           | F1  | F2  | F3  | F4  | F5  |   |  *  |  7  |  8  |  9  |  -  |
 //           | BT0 | BT1 | BT2 | BT3 | BT4 |   |  /  |  4  |  5  |  6  |  +  |
 // |  boot   | Clr | Out |     | F11 | F12 |   |  0  |  1  |  2  |  3  |  .  | Bspc |
-//                     |     |     |     |   |     |     |     |
+//                     |     | Ctrl|     |   |     |     |     |
             bindings = <
-                        &kp F1       &kp F2       &kp F3    &kp F4    &kp F5          &kp KP_MULTIPLY &kp N7 &kp N8 &kp N9 &kp KP_SUBTRACT
-                        &bt BT_SEL 0 &bt BT_SEL 1 &bt BT_SEL 2 &bt BT_SEL 3 &bt BT_SEL 4 &kp KP_DIVIDE &kp N4 &kp N5 &kp N6 &kp KP_PLUS
-            &bootloader &bt BT_CLR   &out OUT_TOG &trans    &kp F11   &kp F12         &kp N0          &kp N1 &kp N2 &kp N3 &kp DOT      &kp BSPC
-                                                  &trans    &trans    &trans          &trans          &trans &trans
+                        &kp F1       &kp F2       &kp F3       &kp F4       &kp F5          &kp KP_MULTIPLY &kp N7 &kp N8 &kp N9 &kp KP_SUBTRACT
+                        &bt BT_SEL 0 &bt BT_SEL 1 &bt BT_SEL 2 &bt BT_SEL 3 &bt BT_SEL 4    &kp KP_DIVIDE   &kp N4 &kp N5 &kp N6 &kp KP_PLUS
+            &bootloader &bt BT_CLR   &out OUT_TOG &trans       &kp F11      &kp F12         &kp N0          &kp N1 &kp N2 &kp N3 &kp DOT      &kp BSPC
+                                                      &trans       &kp LCTRL    &trans          &trans          &trans &trans
             >;
         };
     };
