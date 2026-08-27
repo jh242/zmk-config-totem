@@ -124,7 +124,7 @@
                         &kp N1    &kp N2    &kp N3       &kp N4    &kp N5        &kp N6    &kp N7    &kp N8    &kp N9    &kp N0
                         &trans    &trans    &trans       &trans    &trans        &kp LEFT  &kp DOWN  &kp UP    &kp RIGHT &kp APOS
             &trans      &trans    &trans    &kp LC(BSPC) &trans    &trans        &kp HOME  &kp PG_DN &kp PG_UP &kp END   &kp GRAVE &kp DEL
-                                            &trans       &kp LCTRL &trans        &trans    &trans    &trans
+                                            &trans       &trans    &trans        &trans    &trans    &trans
             >;
         };
 
@@ -140,7 +140,7 @@
                         &kp EXCL  &kp AT    &kp HASH &kp DLLR &kp PRCNT      &kp CARET &kp AMPS &kp ASTRK &kp LPAR &kp RPAR
                         &kp LBKT  &kp RBKT  &kp LPAR &kp RPAR &kp TILDE      &kp MINUS &kp EQUAL &kp LBRC &kp RBRC &kp PIPE
             &trans      &kp LBRC  &kp RBRC  &kp LT   &kp GT   &trans         &kp UNDER &kp PLUS &trans    &trans   &kp BSLH &kp GRAVE
-                                          &trans    &kp LCTRL &trans         &trans    &trans   &trans
+                                          &trans    &trans   &trans         &trans    &trans   &trans
             >;
         };
 
@@ -156,7 +156,7 @@
                         &kp F1       &kp F2       &kp F3       &kp F4       &kp F5          &kp KP_MULTIPLY &kp N7 &kp N8 &kp N9 &kp KP_SUBTRACT
                         &bt BT_SEL 0 &bt BT_SEL 1 &bt BT_SEL 2 &bt BT_SEL 3 &bt BT_SEL 4    &kp KP_DIVIDE   &kp N4 &kp N5 &kp N6 &kp KP_PLUS
             &bootloader &bt BT_CLR   &out OUT_TOG &trans       &kp F11      &kp F12         &kp N0          &kp N1 &kp N2 &kp N3 &kp DOT      &kp BSPC
-                                                      &trans       &kp LCTRL    &trans          &trans          &trans &trans
+                                                      &trans       &trans       &trans          &trans          &trans &trans
             >;
         };
     };
