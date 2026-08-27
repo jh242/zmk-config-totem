@@ -1,7 +1,7 @@
 // TOTEM — QWERTY for Vim, Claude Code, React / Qt / C++
 //
 // Corne muscle memory on thumbs (Space = right), tuned for 38 keys:
-// - Middle thumbs hold mods (Ctrl / Gui) — no home-row mods
+// - Thumb mods: Alt · Ctrl · … · … · Esc · Gui (no home-row mods — fast rolls)
 // - Enter (left) → NAV; Space (right) → SYM; both → NUM
 // - Outer bottoms: Tab/Shift and Backspace
 // - Opposite-hand layers + left-weighted brackets for JSX / templates
