@@ -1,12 +1,14 @@
-// TOTEM — QWERTY for Vim, Claude Code, React / Qt / C++
+// TOTEM — port of jh242/qmk-config-charybdis (Charybdis Mini "totem" keymap)
 //
-// Home-row mods tuned for fast/sloppy typing (urob-style):
+// Home-row mods own Gui/Alt/Ctrl/Shift → thumbs are NOT mod-taps.
+//   - Thumbs: Ent · Bspc · NAV | Spc · SYM · Esc
+//   - Outers: Tab / '
+//   Combos: J+K → Esc, Z+X → Caps Word
+//
+// HRM tuned for fast/sloppy typing (urob-style):
 // - opposite-hand only via hold-trigger-key-positions
 // - require-prior-idle-ms → already typing = tap (kills roll false-holds)
 // - hold-trigger-on-release → same-hand mod chords (Ctrl+Shift) still work
-//
-// Thumbs: Alt · Ctrl(NAV) · Enter | Space · Esc(SYM) · Gui
-// Layers on mods, not Ret/Space — Ret and Space stay reliable taps.
 
 #include <behaviors.dtsi>
 #include <dt-bindings/zmk/keys.h>
@@ -101,28 +103,27 @@
 // -----------------------------------------------------------------------------------------
 //           |  Q  |  W  |  E  |  R  |  T  |   |  Y  |  U  |  I  |  O  |  P  |
 //           |A/GUI|S/ALT|D/CTL|F/SFT|  G  |   |  H  |J/SFT|K/CTL|L/ALT|;/GUI|
-// | Tab/Sft |  Z  |  X  |  C  |  V  |  B  |   |  N  |  M  |  ,  |  .  |  /  | Bspc |
-//                     | Alt | Ctrl| Ent |   | Spc | Esc | Gui |
-//                            NAV↑                    SYM↑
+// |   Tab   |  Z  |  X  |  C  |  V  |  B  |   |  N  |  M  |  ,  |  .  |  /  |  '   |
+//                     | Ent | Bspc| NAV |   | Spc | SYM | Esc |
             bindings = <
                         &kp Q          &kp W          &kp E          &kp R          &kp T            &kp Y          &kp U          &kp I          &kp O          &kp P
                         &hml LGUI A    &hml LALT S    &hml LCTRL D   &hml LSHFT F   &kp G            &kp H          &hmr RSHFT J   &hmr RCTRL K   &hmr RALT L    &hmr RGUI SEMI
-            &mt LSHFT TAB &kp Z          &kp X          &kp C          &kp V          &kp B            &kp N          &kp M          &kp COMMA      &kp DOT        &kp FSLH       &kp BSPC
-                                                       &kp LALT       &lt NAV LCTRL  &kp RET          &kp SPACE      &lt SYM ESC    &kp LGUI
+            &kp TAB     &kp Z          &kp X          &kp C          &kp V          &kp B            &kp N          &kp M          &kp COMMA      &kp DOT        &kp FSLH       &kp APOS
+                                                       &kp RET        &kp BSPC       &mo NAV          &kp SPACE      &mo SYM        &kp ESC
             >;
         };
 
         nav_layer {
             display-name = "NAV";
-// Hold Ctrl (left thumb) → numbers + vim arrows on the right.
+// Hold NAV (left thumb) → numbers + vim arrows on the right.
 // -----------------------------------------------------------------------------------------
 //           |  1  |  2  |  3  |  4  |  5  |   |  6  |  7  |  8  |  9  |  0  |
-//           |     |     |     |     |     |   |  ←  |  ↓  |  ↑  |  →  |  '  |
+//           |     |     |     |     |     |   |  ←  |  ↓  |  ↑  |  →  |     |
 // |         |     |     |wDel |     |     |   |Home |PgDn |PgUp | End |  `  | Del  |
-//                     |     | Ctrl|     |   |     |     |     |
+//                     | NAV |     |     |   |     |     |     |
             bindings = <
                         &kp N1    &kp N2    &kp N3       &kp N4    &kp N5        &kp N6    &kp N7    &kp N8    &kp N9    &kp N0
-                        &trans    &trans    &trans       &trans    &trans        &kp LEFT  &kp DOWN  &kp UP    &kp RIGHT &kp APOS
+                        &trans    &trans    &trans       &trans    &trans        &kp LEFT  &kp DOWN  &kp UP    &kp RIGHT &trans
             &trans      &trans    &trans    &kp LC(BSPC) &trans    &trans        &kp HOME  &kp PG_DN &kp PG_UP &kp END   &kp GRAVE &kp DEL
                                             &trans       &trans    &trans        &trans    &trans    &trans
             >;
@@ -130,16 +131,16 @@
 
         sym_layer {
             display-name = "SYM";
-// Hold Esc (right thumb) → brackets / operators on the left.
+// Hold SYM (right thumb) → brackets / operators (Charybdis layout).
 // -----------------------------------------------------------------------------------------
 //           |  !  |  @  |  #  |  $  |  %  |   |  ^  |  &  |  *  |  (  |  )  |
-//           |  [  |  ]  |  (  |  )  |  ~  |   |  -  |  =  |  {  |  }  |  |  |
-// |         |  {  |  }  |  <  |  >  |     |   |  _  |  +  |      |      |  \  |  `   |
-//                     |     | Ctrl|     |   |     |     |     |
+//           |  [  |  ]  |  (  |  )  |  ~  |   |  -  |  =  |  [  |  ]  |  \  |
+// |         |  {  |  }  |  <  |  >  |     |   |  _  |  +  |  {  |  }  |  |  |  `   |
+//                     |     |     |     |   |     | SYM |     |
             bindings = <
                         &kp EXCL  &kp AT    &kp HASH &kp DLLR &kp PRCNT      &kp CARET &kp AMPS &kp ASTRK &kp LPAR &kp RPAR
-                        &kp LBKT  &kp RBKT  &kp LPAR &kp RPAR &kp TILDE      &kp MINUS &kp EQUAL &kp LBRC &kp RBRC &kp PIPE
-            &trans      &kp LBRC  &kp RBRC  &kp LT   &kp GT   &trans         &kp UNDER &kp PLUS &trans    &trans   &kp BSLH &kp GRAVE
+                        &kp LBKT  &kp RBKT  &kp LPAR &kp RPAR &kp TILDE      &kp MINUS &kp EQUAL &kp LBKT  &kp RBKT  &kp BSLH
+            &trans      &kp LBRC  &kp RBRC  &kp LT   &kp GT   &trans         &kp UNDER &kp PLUS  &kp LBRC  &kp RBRC  &kp PIPE  &kp GRAVE
                                           &trans    &trans   &trans         &trans    &trans   &trans
             >;
         };
@@ -151,7 +152,7 @@
 //           | F1  | F2  | F3  | F4  | F5  |   |  *  |  7  |  8  |  9  |  -  |
 //           | BT0 | BT1 | BT2 | BT3 | BT4 |   |  /  |  4  |  5  |  6  |  +  |
 // |  boot   | Clr | Out |     | F11 | F12 |   |  0  |  1  |  2  |  3  |  .  | Bspc |
-//                     |     | Ctrl|     |   |     |     |     |
+//                     |     |     |     |   |     |     |     |
             bindings = <
                         &kp F1       &kp F2       &kp F3       &kp F4       &kp F5          &kp KP_MULTIPLY &kp N7 &kp N8 &kp N9 &kp KP_SUBTRACT
                         &bt BT_SEL 0 &bt BT_SEL 1 &bt BT_SEL 2 &bt BT_SEL 3 &bt BT_SEL 4    &kp KP_DIVIDE   &kp N4 &kp N5 &kp N6 &kp KP_PLUS
