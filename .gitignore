@@ -1,0 +1,13 @@
+# Local west / Zephyr build workspace (not part of the user config)
+.west/
+build/
+modules/
+optional/
+zephyr/
+zmk/
+bootloader/
+tools/
+firmware/
+*.uf2
+*.hex
+*.elf
